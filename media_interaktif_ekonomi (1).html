@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EkonoChat — Media Interaktif Sejarah Pemikiran Ekonomi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #0D2240;
+  --navy2:  #1A3A5C;
+  --gold:   #C9913A;
+  --gold2:  #F5E6C8;
+  --cream:  #FAF8F3;
+  --dark:   #1C1C1E;
+  --muted:  #6B7280;
+  --white:  #FFFFFF;
+  --smith:  #2E5F3A;
+  --neo:    #0E6B6B;
+  --keynes: #185FA5;
+  --kahan:  #7C3A6B;
+  --radius: 14px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.10);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--dark);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── LOADING SCREEN ── */
+#loading {
+  position: fixed; inset: 0;
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.6s;
+}
+#loading h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem; color: var(--white);
+  letter-spacing: -1px; margin-bottom: 0.3rem;
+}
+#loading p { color: var(--gold2); font-size: 1rem; margin-bottom: 2rem; }
+.loader-bar {
+  width: 260px; height: 3px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 99px; overflow: hidden;
+}
+.loader-fill {
+  height: 100%; background: var(--gold);
+  border-radius: 99px;
+  animation: loadFill 1.8s ease forwards;
+}
+@keyframes loadFill { from{width:0} to{width:100%} }
+
+/* ── APP LAYOUT ── */
+#app { display: none; flex-direction: column; min-height: 100vh; }
+
+/* ── HEADER ── */
+header {
+  background: var(--navy);
+  padding: 0.9rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 3px solid var(--gold);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; color: var(--white);
+  display: flex; align-items: center; gap: 10px;
+}
+.logo span { color: var(--gold); }
+.logo-sub { font-size: 0.72rem; color: var(--gold2); font-family: 'DM Sans', sans-serif; font-weight: 300; margin-top: 2px; }
+.header-tabs { display: flex; gap: 6px; }
+.htab {
+  padding: 7px 18px; border-radius: 99px;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  background: transparent; color: rgba(255,255,255,0.7);
+  font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.htab.active, .htab:hover {
+  background: var(--gold); border-color: var(--gold); color: var(--white);
+}
+.score-badge {
+  background: rgba(201,145,58,0.2);
+  border: 1px solid var(--gold);
+  color: var(--gold); padding: 5px 14px;
+  border-radius: 99px; font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ══════════════════════════════════
+   HOME PAGE
+══════════════════════════════════ */
+#home {
+  padding: 3rem 2rem 2rem;
+  max-width: 1100px; margin: 0 auto;
+}
+.home-hero {
+  text-align: center; margin-bottom: 3rem;
+}
+.home-hero h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.6rem; color: var(--navy);
+  line-height: 1.2; margin-bottom: 0.8rem;
+}
+.home-hero h2 em { color: var(--gold); font-style: italic; }
+.home-hero p { color: var(--muted); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+.tokoh-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.2rem; margin-bottom: 2rem;
+}
+.tokoh-card {
+  border-radius: var(--radius);
+  overflow: hidden; cursor: pointer;
+  transition: transform 0.25s, box-shadow 0.25s;
+  box-shadow: var(--shadow);
+  border: 2px solid transparent;
+}
+.tokoh-card:hover { transform: translateY(-5px); box-shadow: 0 12px 36px rgba(0,0,0,0.14); }
+.tokoh-card.selected { border-color: var(--gold); }
+.tc-header {
+  padding: 1.4rem 1.2rem 1rem;
+  display: flex; flex-direction: column; align-items: center;
+}
+.tc-avatar {
+  width: 68px; height: 68px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; margin-bottom: 0.8rem;
+  border: 3px solid rgba(255,255,255,0.3);
+}
+.tc-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem; color: var(--white);
+  text-align: center; margin-bottom: 3px;
+}
+.tc-era { font-size: 0.75rem; color: rgba(255,255,255,0.65); }
+.tc-body { background: var(--white); padding: 1rem 1.2rem; }
+.tc-tag {
+  display: inline-block; font-size: 0.72rem; font-weight: 600;
+  padding: 2px 10px; border-radius: 99px; margin-bottom: 0.5rem;
+}
+.tc-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.55; margin-bottom: 0.9rem; }
+.tc-btn {
+  width: 100%; padding: 8px; border-radius: 8px;
+  border: none; font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.tc-btn:hover { opacity: 0.85; }
+
+.smith-c  { background: var(--smith); }
+.neo-c    { background: var(--neo); }
+.keynes-c { background: var(--keynes); }
+.kahan-c  { background: var(--kahan); }
+
+.mode-section { margin-top: 1rem; }
+.mode-section h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; color: var(--navy); margin-bottom: 1rem;
+  padding-bottom: 0.5rem; border-bottom: 2px solid var(--gold2);
+}
+.mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.mode-card {
+  background: var(--white); border-radius: var(--radius);
+  padding: 1.4rem; cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s; box-shadow: var(--shadow);
+  display: flex; gap: 1rem; align-items: flex-start;
+}
+.mode-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.mode-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; flex-shrink: 0;
+}
+.mode-card h4 { font-size: 1rem; color: var(--navy); margin-bottom: 4px; }
+.mode-card p { font-size: 0.83rem; color: var(--muted); line-height: 1.5; }
+
+/* ══════════════════════════════════
+   CHAT PAGE
+══════════════════════════════════ */
+#chat-page {
+  display: flex; height: calc(100vh - 60px);
+}
+.chat-sidebar {
+  width: 260px; background: var(--navy);
+  padding: 1.2rem; display: flex; flex-direction: column; gap: 0.7rem;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  overflow-y: auto;
+}
+.sidebar-title {
+  font-size: 0.7rem; font-weight: 600; color: var(--gold);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+.tokoh-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px;
+  border: 1.5px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  cursor: pointer; transition: all 0.2s;
+  color: rgba(255,255,255,0.8); font-size: 0.9rem;
+}
+.tokoh-btn:hover { background: rgba(255,255,255,0.1); }
+.tokoh-btn.active { border-color: var(--gold); background: rgba(201,145,58,0.15); color: var(--white); }
+.tb-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.tb-info { text-align: left; }
+.tb-name { font-weight: 600; font-size: 0.88rem; }
+.tb-role { font-size: 0.72rem; color: rgba(255,255,255,0.5); }
+
+.chat-area {
+  flex: 1; display: flex; flex-direction: column;
+  background: var(--cream);
+}
+.chat-header {
+  padding: 1rem 1.5rem;
+  background: var(--white);
+  border-bottom: 1px solid #E5E7EB;
+  display: flex; align-items: center; gap: 12px;
+}
+.chat-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+}
+.chat-name { font-weight: 600; font-size: 1rem; color: var(--dark); }
+.chat-role { font-size: 0.78rem; color: var(--muted); }
+.chat-status {
+  margin-left: auto; font-size: 0.75rem;
+  color: #22c55e; display: flex; align-items: center; gap: 5px;
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #22c55e; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.messages {
+  flex: 1; overflow-y: auto; padding: 1.5rem;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.msg {
+  display: flex; gap: 10px; align-items: flex-end;
+  animation: msgIn 0.3s ease;
+}
+@keyframes msgIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+.msg.user { flex-direction: row-reverse; }
+.msg-av {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; flex-shrink: 0;
+}
+.msg-bubble {
+  max-width: 68%; padding: 0.85rem 1rem;
+  border-radius: 16px; line-height: 1.6; font-size: 0.9rem;
+}
+.msg.bot .msg-bubble {
+  background: var(--white); color: var(--dark);
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.msg.user .msg-bubble {
+  background: var(--navy); color: var(--white);
+  border-bottom-right-radius: 4px;
+}
+.msg-time { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+
+.quick-btns {
+  padding: 0.6rem 1.5rem; display: flex; flex-wrap: wrap; gap: 6px;
+}
+.qbtn {
+  padding: 6px 14px; border-radius: 99px;
+  border: 1.5px solid #D1D5DB;
+  background: var(--white); font-size: 0.8rem;
+  cursor: pointer; transition: all 0.2s; color: var(--dark);
+}
+.qbtn:hover { border-color: var(--gold); color: var(--gold); }
+
+.chat-input-area {
+  padding: 1rem 1.5rem;
+  background: var(--white); border-top: 1px solid #E5E7EB;
+  display: flex; gap: 10px;
+}
+.chat-input {
+  flex: 1; padding: 10px 16px;
+  border: 1.5px solid #E5E7EB; border-radius: 99px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  outline: none; transition: border-color 0.2s;
+  background: var(--cream);
+}
+.chat-input:focus { border-color: var(--gold); }
+.send-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--navy); border: none;
+  color: var(--white); font-size: 1rem;
+  cursor: pointer; transition: background 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.send-btn:hover { background: var(--gold); }
+
+.typing {
+  display: flex; gap: 4px; align-items: center;
+  padding: 10px 14px;
+}
+.typing span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--muted); display: inline-block;
+  animation: bounce 1s infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.15s; }
+.typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+
+/* ══════════════════════════════════
+   DEBATE PAGE
+══════════════════════════════════ */
+#debate-page { padding: 2rem; max-width: 900px; margin: 0 auto; }
+.debate-header {
+  text-align: center; margin-bottom: 2rem;
+}
+.debate-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; color: var(--navy); margin-bottom: 0.5rem;
+}
+.debate-header p { color: var(--muted); }
+
+.debate-select {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem;
+  align-items: center; margin-bottom: 2rem;
+}
+.debate-pick {
+  background: var(--white); border-radius: var(--radius);
+  padding: 1.2rem; box-shadow: var(--shadow);
+}
+.debate-pick h4 {
+  font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 0.8rem;
+}
+.dtokoh-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px;
+  border: 1.5px solid #E5E7EB;
+  background: transparent; cursor: pointer;
+  width: 100%; margin-bottom: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+  transition: all 0.2s;
+}
+.dtokoh-btn:hover { border-color: var(--gold); }
+.dtokoh-btn.selected { border-color: var(--gold); background: #FBF3E3; }
+.vs-badge {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--navy); color: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; font-weight: 700; flex-shrink: 0;
+}
+
+.topic-list {
+  background: var(--white); border-radius: var(--radius);
+  padding: 1.2rem; box-shadow: var(--shadow); margin-bottom: 1.5rem;
+}
+.topic-list h4 {
+  font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 0.8rem;
+}
+.topic-btn {
+  display: block; width: 100%; text-align: left;
+  padding: 8px 12px; border-radius: 8px;
+  border: 1.5px solid #E5E7EB; background: transparent;
+  font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+  cursor: pointer; margin-bottom: 6px; transition: all 0.2s;
+}
+.topic-btn:hover { border-color: var(--gold); color: var(--gold); }
+.topic-btn.selected { border-color: var(--gold); background: #FBF3E3; color: var(--navy); font-weight: 600; }
+
+.start-debate-btn {
+  display: block; width: 100%;
+  padding: 14px; border-radius: var(--radius);
+  background: var(--navy); color: var(--white);
+  border: none; font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s; margin-bottom: 2rem;
+}
+.start-debate-btn:hover { background: var(--gold); }
+.start-debate-btn:disabled { opacity: 0.4; cursor: default; background: var(--navy); }
+
+.debate-arena {
+  display: none; flex-direction: column; gap: 1rem;
+}
+.debate-arena.visible { display: flex; }
+.debate-msg {
+  display: flex; gap: 12px; align-items: flex-start;
+  animation: msgIn 0.4s ease;
+}
+.debate-msg.right { flex-direction: row-reverse; }
+.debate-av {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.debate-bubble {
+  max-width: 72%; padding: 1rem 1.2rem;
+  border-radius: 16px; line-height: 1.65;
+  font-size: 0.9rem; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.debate-msg.left .debate-bubble { background: var(--white); border-bottom-left-radius: 4px; }
+.debate-msg.right .debate-bubble { background: var(--navy); color: var(--white); border-bottom-right-radius: 4px; }
+.debate-speaker {
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.5px; margin-bottom: 4px; opacity: 0.7;
+}
+
+/* ══════════════════════════════════
+   QUIZ PAGE
+══════════════════════════════════ */
+#quiz-page { padding: 2rem; max-width: 760px; margin: 0 auto; }
+.quiz-header { text-align: center; margin-bottom: 2rem; }
+.quiz-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; color: var(--navy); margin-bottom: 0.5rem;
+}
+.quiz-header p { color: var(--muted); }
+
+.quiz-start {
+  background: var(--white); border-radius: var(--radius);
+  padding: 2rem; box-shadow: var(--shadow); text-align: center;
+  margin-bottom: 1.5rem;
+}
+.quiz-start h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem; color: var(--navy); margin-bottom: 0.6rem;
+}
+.quiz-start p { color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
+.qs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.qs-item { text-align: center; }
+.qs-num { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); font-weight: 700; }
+.qs-label { font-size: 0.8rem; color: var(--muted); }
+
+.start-quiz-btn {
+  padding: 12px 36px; border-radius: var(--radius);
+  background: var(--navy); color: var(--white);
+  border: none; font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.start-quiz-btn:hover { background: var(--gold); }
+
+.quiz-progress {
+  display: none; margin-bottom: 1.5rem;
+}
+.qp-bar {
+  height: 5px; background: #E5E7EB; border-radius: 99px;
+  overflow: hidden; margin-bottom: 6px;
+}
+.qp-fill {
+  height: 100%; background: var(--gold);
+  border-radius: 99px; transition: width 0.4s ease;
+}
+.qp-info {
+  display: flex; justify-content: space-between;
+  font-size: 0.8rem; color: var(--muted);
+}
+
+.quiz-card {
+  background: var(--white); border-radius: var(--radius);
+  padding: 2rem; box-shadow: var(--shadow);
+  display: none;
+}
+.quiz-card.active { display: block; animation: msgIn 0.35s ease; }
+.q-category {
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 0.6rem;
+}
+.q-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem; color: var(--navy);
+  line-height: 1.5; margin-bottom: 1.5rem;
+}
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option-btn {
+  padding: 12px 16px; border-radius: 10px;
+  border: 2px solid #E5E7EB; background: var(--cream);
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  text-align: left; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 12px;
+}
+.option-btn:hover:not(:disabled) { border-color: var(--gold); background: #FBF3E3; }
+.option-btn.correct { border-color: #22c55e; background: #f0fdf4; color: #166534; }
+.option-btn.wrong { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+.opt-letter {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: #E5E7EB; display: flex; align-items: center;
+  justify-content: center; font-weight: 700; font-size: 0.82rem;
+  flex-shrink: 0; transition: all 0.2s;
+}
+.option-btn.correct .opt-letter { background: #22c55e; color: white; }
+.option-btn.wrong .opt-letter { background: #ef4444; color: white; }
+
+.q-feedback {
+  margin-top: 1rem; padding: 0.9rem 1.2rem;
+  border-radius: 10px; font-size: 0.88rem; line-height: 1.6;
+  display: none;
+}
+.q-feedback.correct { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+.q-feedback.wrong { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+.next-btn {
+  margin-top: 1.2rem; padding: 10px 24px;
+  border-radius: 8px; background: var(--navy);
+  color: var(--white); border: none;
+  font-family: 'DM Sans', sans-serif; font-weight: 600;
+  cursor: pointer; display: none; transition: background 0.2s;
+}
+.next-btn:hover { background: var(--gold); }
+
+.quiz-result {
+  display: none; text-align: center;
+  background: var(--white); border-radius: var(--radius);
+  padding: 2.5rem; box-shadow: var(--shadow);
+}
+.result-icon { font-size: 4rem; margin-bottom: 1rem; }
+.result-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem; color: var(--navy); margin-bottom: 0.5rem;
+}
+.result-score {
+  font-size: 3.5rem; font-weight: 700; color: var(--gold);
+  font-family: 'Playfair Display', serif; margin: 1rem 0;
+}
+.result-msg { color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
+.retry-btn {
+  padding: 12px 32px; border-radius: var(--radius);
+  background: var(--navy); color: var(--white);
+  border: none; font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s; margin-right: 10px;
+}
+.retry-btn:hover { background: var(--gold); }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 99px; }
+
+@media (max-width: 640px) {
+  .mode-grid { grid-template-columns: 1fr; }
+  .tokoh-grid { grid-template-columns: 1fr 1fr; }
+  .chat-sidebar { width: 60px; }
+  .tb-info { display: none; }
+  .debate-select { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <h1>Ekono<span style="color:var(--gold)">Chat</span></h1>
+  <p>Media Interaktif Sejarah Pemikiran Ekonomi</p>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div>
+        <div>Ekono<span>Chat</span></div>
+        <div class="logo-sub">Media Interaktif · Sejarah Pemikiran Ekonomi</div>
+      </div>
+    </div>
+    <div class="header-tabs">
+      <button class="htab active" onclick="showPage('home')">🏠 Beranda</button>
+      <button class="htab" onclick="showPage('chat')">💬 Chat Tokoh</button>
+      <button class="htab" onclick="showPage('debate')">⚔️ Debat</button>
+      <button class="htab" onclick="showPage('quiz')">📝 Kuis</button>
+    </div>
+    <div class="score-badge">⭐ Poin: <span id="totalScore">0</span></div>
+  </header>
+
+  <!-- ════════ HOME ════════ -->
+  <div id="home" class="page active" style="overflow-y:auto;height:calc(100vh - 60px)">
+    <div style="max-width:1100px;margin:0 auto;padding:2.5rem 2rem 3rem">
+      <div class="home-hero">
+        <h2>Belajar Ekonomi Terasa<br><em>Lebih Hidup</em> dari Sebelumnya</h2>
+        <p>Chat langsung dengan 4 tokoh besar pemikiran ekonomi dunia, saksikan mereka berdebat, dan uji pemahamanmu lewat kuis interaktif!</p>
+      </div>
+
+      <div class="tokoh-grid">
+        <!-- Adam Smith -->
+        <div class="tokoh-card" onclick="startChat('smith')">
+          <div class="tc-header smith-c">
+            <div class="tc-avatar" style="background:rgba(255,255,255,0.15)">🧔</div>
+            <div class="tc-name">Adam Smith</div>
+            <div class="tc-era">1723 – 1790</div>
+          </div>
+          <div class="tc-body">
+            <span class="tc-tag" style="background:#E8F5E9;color:#2E5F3A">Ekonomi Klasik</span>
+            <div class="tc-desc">Bapak Ilmu Ekonomi Modern. Penulis The Wealth of Nations (1776). Pencetus teori invisible hand dan pasar bebas.</div>
+            <button class="tc-btn smith-c" style="color:white">💬 Mulai Chat</button>
+          </div>
+        </div>
+        <!-- Neoklasik -->
+        <div class="tokoh-card" onclick="startChat('neo')">
+          <div class="tc-header neo-c">
+            <div class="tc-avatar" style="background:rgba(255,255,255,0.15)">👨‍🏫</div>
+            <div class="tc-name">Alfred Marshall</div>
+            <div class="tc-era">1842 – 1924</div>
+          </div>
+          <div class="tc-body">
+            <span class="tc-tag" style="background:#E0F2F1;color:#0E6B6B">Neoklasik</span>
+            <div class="tc-desc">Bapak Mazhab Neoklasik. Pencetus analisis marjinal dan kurva permintaan-penawaran modern.</div>
+            <button class="tc-btn neo-c" style="color:white">💬 Mulai Chat</button>
+          </div>
+        </div>
+        <!-- Keynes -->
+        <div class="tokoh-card" onclick="startChat('keynes')">
+          <div class="tc-header keynes-c">
+            <div class="tc-avatar" style="background:rgba(255,255,255,0.15)">🎩</div>
+            <div class="tc-name">J.M. Keynes</div>
+            <div class="tc-era">1883 – 1946</div>
+          </div>
+          <div class="tc-body">
+            <span class="tc-tag" style="background:#E3F2FD;color:#185FA5">Keynesian</span>
+            <div class="tc-desc">Bapak Ilmu Ekonomi Makro. Pencetus teori permintaan agregat dan peran aktif pemerintah dalam ekonomi.</div>
+            <button class="tc-btn keynes-c" style="color:white">💬 Mulai Chat</button>
+          </div>
+        </div>
+        <!-- Kahneman -->
+        <div class="tokoh-card" onclick="startChat('kahan')">
+          <div class="tc-header kahan-c">
+            <div class="tc-avatar" style="background:rgba(255,255,255,0.15)">🧠</div>
+            <div class="tc-name">Daniel Kahneman</div>
+            <div class="tc-era">1934 – 2024</div>
+          </div>
+          <div class="tc-body">
+            <span class="tc-tag" style="background:#F3E5F5;color:#7C3A6B">Behavioral Econ.</span>
+            <div class="tc-desc">Pemenang Nobel 2002. Pencetus Prospect Theory. Membuktikan bahwa manusia tidak selalu bertindak rasional.</div>
+            <button class="tc-btn kahan-c" style="color:white">💬 Mulai Chat</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mode-section">
+        <h3>🎮 Mode Pembelajaran</h3>
+        <div class="mode-grid">
+          <div class="mode-card" onclick="showPage('debate')">
+            <div class="mode-icon" style="background:#FBF3E3">⚔️</div>
+            <div>
+              <h4>Mode Debat Tokoh</h4>
+              <p>Saksikan 2 tokoh ekonomi berdebat sengit tentang isu-isu besar ekonomi! Pilih topik, pilih peserta debat, dan pelajari perbedaan pandangan mereka.</p>
+            </div>
+          </div>
+          <div class="mode-card" onclick="showPage('quiz')">
+            <div class="mode-icon" style="background:#E3F2FD">📝</div>
+            <div>
+              <h4>Kuis Interaktif</h4>
+              <p>Uji pemahamanmu tentang sejarah pemikiran ekonomi! 15 soal dari berbagai aliran — kumpulkan poin sebanyak-banyaknya!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ CHAT ════════ -->
+  <div id="chat" class="page" style="height:calc(100vh - 60px)">
+    <div id="chat-page">
+      <div class="chat-sidebar">
+        <div class="sidebar-title">Pilih Tokoh</div>
+        <button class="tokoh-btn active" onclick="switchTokoh('smith')" id="btn-smith">
+          <div class="tb-dot" style="background:var(--smith)">🧔</div>
+          <div class="tb-info">
+            <div class="tb-name">Adam Smith</div>
+            <div class="tb-role">Ekonomi Klasik</div>
+          </div>
+        </button>
+        <button class="tokoh-btn" onclick="switchTokoh('neo')" id="btn-neo">
+          <div class="tb-dot" style="background:var(--neo)">👨‍🏫</div>
+          <div class="tb-info">
+            <div class="tb-name">A. Marshall</div>
+            <div class="tb-role">Neoklasik</div>
+          </div>
+        </button>
+        <button class="tokoh-btn" onclick="switchTokoh('keynes')" id="btn-keynes">
+          <div class="tb-dot" style="background:var(--keynes)">🎩</div>
+          <div class="tb-info">
+            <div class="tb-name">J.M. Keynes</div>
+            <div class="tb-role">Keynesian</div>
+          </div>
+        </button>
+        <button class="tokoh-btn" onclick="switchTokoh('kahan')" id="btn-kahan">
+          <div class="tb-dot" style="background:var(--kahan)">🧠</div>
+          <div class="tb-info">
+            <div class="tb-name">Kahneman</div>
+            <div class="tb-role">Behavioral</div>
+          </div>
+        </button>
+        <div style="margin-top:auto;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.1)">
+          <div class="sidebar-title" style="margin-bottom:0.5rem">Tips</div>
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.45);line-height:1.6">Tanya apa saja! Setiap tokoh akan menjawab sesuai filsafat dan zamannya.</div>
+        </div>
+      </div>
+
+      <div class="chat-area">
+        <div class="chat-header">
+          <div class="chat-avatar" id="chatAv" style="background:var(--smith)">🧔</div>
+          <div>
+            <div class="chat-name" id="chatName">Adam Smith</div>
+            <div class="chat-role" id="chatRole">Ekonom Klasik · Skotlandia · 1723–1790</div>
+          </div>
+          <div class="chat-status">
+            <div class="status-dot"></div> Online
+          </div>
+        </div>
+
+        <div class="messages" id="messages"></div>
+
+        <div class="quick-btns" id="quickBtns"></div>
+
+        <div class="chat-input-area">
+          <input class="chat-input" id="chatInput" placeholder="Tanya sesuatu kepada tokoh ini..." onkeydown="if(event.key==='Enter') sendMsg()">
+          <button class="send-btn" onclick="sendMsg()">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ DEBATE ════════ -->
+  <div id="debate" class="page" style="overflow-y:auto;height:calc(100vh - 60px)">
+    <div id="debate-page">
+      <div class="debate-header">
+        <h2>⚔️ Arena Debat Tokoh Ekonomi</h2>
+        <p>Pilih dua tokoh dan topik debat — saksikan pertarungan ide ekonomi terbesar!</p>
+      </div>
+
+      <div class="debate-select">
+        <div class="debate-pick">
+          <h4>Tokoh Pertama</h4>
+          <button class="dtokoh-btn selected" onclick="selectDebater(1,'smith')" id="d1-smith">
+            <span>🧔</span> Adam Smith
+          </button>
+          <button class="dtokoh-btn" onclick="selectDebater(1,'neo')" id="d1-neo">
+            <span>👨‍🏫</span> Alfred Marshall
+          </button>
+          <button class="dtokoh-btn" onclick="selectDebater(1,'keynes')" id="d1-keynes">
+            <span>🎩</span> J.M. Keynes
+          </button>
+          <button class="dtokoh-btn" onclick="selectDebater(1,'kahan')" id="d1-kahan">
+            <span>🧠</span> Kahneman
+          </button>
+        </div>
+
+        <div class="vs-badge">VS</div>
+
+        <div class="debate-pick">
+          <h4>Tokoh Kedua</h4>
+          <button class="dtokoh-btn" onclick="selectDebater(2,'smith')" id="d2-smith">
+            <span>🧔</span> Adam Smith
+          </button>
+          <button class="dtokoh-btn" onclick="selectDebater(2,'neo')" id="d2-neo">
+            <span>👨‍🏫</span> Alfred Marshall
+          </button>
+          <button class="dtokoh-btn selected" onclick="selectDebater(2,'keynes')" id="d2-keynes">
+            <span>🎩</span> J.M. Keynes
+          </button>
+          <button class="dtokoh-btn" onclick="selectDebater(2,'kahan')" id="d2-kahan">
+            <span>🧠</span> Kahneman
+          </button>
+        </div>
+      </div>
+
+      <div class="topic-list">
+        <h4>Pilih Topik Debat</h4>
+        <button class="topic-btn selected" onclick="selectTopic(this,'peran-pemerintah')">🏛️ Seberapa besar peran pemerintah dalam ekonomi?</button>
+        <button class="topic-btn" onclick="selectTopic(this,'rasionalitas')">🧠 Apakah manusia selalu bertindak rasional?</button>
+        <button class="topic-btn" onclick="selectTopic(this,'pasar-bebas')">🌏 Apakah pasar bebas adalah solusi terbaik?</button>
+        <button class="topic-btn" onclick="selectTopic(this,'krisis-ekonomi')">📉 Apa penyebab utama krisis ekonomi?</button>
+        <button class="topic-btn" onclick="selectTopic(this,'kemakmuran')">💰 Apa sumber sejati kemakmuran suatu bangsa?</button>
+      </div>
+
+      <button class="start-debate-btn" onclick="startDebate()" id="startDebateBtn">⚔️ Mulai Debat!</button>
+
+      <div class="debate-arena" id="debateArena"></div>
+    </div>
+  </div>
+
+  <!-- ════════ QUIZ ════════ -->
+  <div id="quiz" class="page" style="overflow-y:auto;height:calc(100vh - 60px)">
+    <div id="quiz-page">
+      <div class="quiz-header">
+        <h2>📝 Kuis Sejarah Pemikiran Ekonomi</h2>
+        <p>Uji pemahamanmu! Setiap jawaban benar = +10 poin</p>
+      </div>
+
+      <div class="quiz-start" id="quizStart">
+        <h3>Siap Memulai Kuis?</h3>
+        <p>Kuis ini mencakup materi dari seluruh modul: dari Yunani Kuno, Adam Smith, Neoklasik, Keynes, hingga Behavioral Economics.</p>
+        <div class="qs-grid">
+          <div class="qs-item"><div class="qs-num">15</div><div class="qs-label">Soal</div></div>
+          <div class="qs-item"><div class="qs-num">4</div><div class="qs-label">Kategori</div></div>
+          <div class="qs-item"><div class="qs-num">150</div><div class="qs-label">Poin Maks.</div></div>
+        </div>
+        <button class="start-quiz-btn" onclick="startQuiz()">🚀 Mulai Kuis!</button>
+      </div>
+
+      <div class="quiz-progress" id="quizProgress">
+        <div class="qp-bar"><div class="qp-fill" id="qpFill" style="width:0%"></div></div>
+        <div class="qp-info">
+          <span id="qpText">Soal 1 dari 15</span>
+          <span>Benar: <span id="qpCorrect">0</span> | Salah: <span id="qpWrong">0</span></span>
+        </div>
+      </div>
+
+      <div id="quizCards"></div>
+      <div class="quiz-result" id="quizResult">
+        <div class="result-icon" id="resultIcon">🏆</div>
+        <div class="result-title" id="resultTitle">Luar Biasa!</div>
+        <div class="result-score" id="resultScore">0</div>
+        <div class="result-msg" id="resultMsg"></div>
+        <button class="retry-btn" onclick="restartQuiz()">🔄 Ulangi Kuis</button>
+        <button class="retry-btn" style="background:var(--gold)" onclick="showPage('home')">🏠 Kembali</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+// ══════════════════════════════════════════════════════
+// DATA TOKOH
+// ══════════════════════════════════════════════════════
+const TOKOH = {
+  smith: {
+    name: "Adam Smith",
+    role: "Ekonom Klasik · Skotlandia · 1723–1790",
+    avatar: "🧔", color: "#2E5F3A",
+    greeting: "Selamat datang, sahabat! Saya Adam Smith, penulis The Wealth of Nations. Saya siap berbicara tentang pasar bebas, invisible hand, pembagian kerja, dan kemakmuran bangsa. Apa yang ingin kamu ketahui?",
+    quick: ["Apa itu invisible hand?","Jelaskan pembagian kerja","Kenapa pasar bebas penting?","Apa teori nilai kamu?"],
+    responses: {
+      "invisible hand": "Ah, pertanyaan yang tepat! Invisible hand — atau 'tangan tak terlihat' — adalah mekanisme di mana individu yang mengejar kepentingan pribadinya sendiri di pasar yang kompetitif, tanpa disadari, justru menguntungkan masyarakat secara keseluruhan. Tukang roti tidak jualan karena ingin memberi makan kotanya — ia jualan karena mau untung. Tapi hasilnya? Semua orang bisa makan roti! Itulah keajaiban pasar bebas.",
+      "pembagian kerja": "Pembagian kerja adalah kunci produktivitas! Bayangkan sebuah pabrik jarum — jika satu orang mengerjakan semua tahap sendiri, ia mungkin hanya membuat 20 jarum sehari. Tapi jika pekerjaan dibagi-bagi: satu orang menarik kawat, satu memotong, satu mengasah — mereka bisa menghasilkan 48.000 jarum sehari per orang! Spesialisasi adalah sumber kemakmuran yang sesungguhnya.",
+      "pasar bebas": "Pasar bebas adalah sistem terbaik yang pernah ada! Ketika tidak ada campur tangan berlebihan dari pemerintah, harga akan menyesuaikan diri secara alami. Persaingan antar penjual mendorong harga turun dan kualitas naik. Prinsip saya: laissez faire — biarkan pasar bekerja sendiri. Regulasi yang berlebihan justru menciptakan distorsi dan ketidakefisienan.",
+      "teori nilai": "Saya membedakan dua jenis nilai: nilai guna (use value) — seberapa berguna suatu barang, dan nilai tukar (exchange value) — seberapa banyak barang lain yang bisa ditukar dengannya. Ada paradoks menarik: air jauh lebih berguna dari emas untuk kelangsungan hidup, tapi emas jauh lebih mahal. Saya akui saya belum bisa sepenuhnya menjelaskan paradoks ini — jawaban baru muncul dari penerus-penerus saya di aliran Neoklasik.",
+      "default": "Pertanyaan yang sangat menarik! Sebagai ekonom yang hidup di era revolusi industri Inggris abad ke-18, saya percaya bahwa kebebasan individu dalam pasar yang kompetitif adalah fondasi kemakmuran bangsa. Setiap orang, ketika bebas mengejar kepentingannya sendiri, secara kolektif akan mendorong pertumbuhan ekonomi masyarakat. Apakah kamu ingin bertanya lebih spesifik tentang invisible hand, pembagian kerja, atau teori nilai saya?"
+    }
+  },
+  neo: {
+    name: "Alfred Marshall",
+    role: "Ekonom Neoklasik · Inggris · 1842–1924",
+    avatar: "👨‍🏫", color: "#0E6B6B",
+    greeting: "Selamat datang! Saya Alfred Marshall dari University of Cambridge. Saya mengembangkan ekonomi menjadi ilmu yang lebih matematis dan presisi. Mari kita bicara tentang analisis marjinal, kurva permintaan-penawaran, dan bagaimana pasar mencapai keseimbangan!",
+    quick: ["Apa itu analisis marjinal?","Jelaskan utilitas marjinal","Bagaimana harga terbentuk?","Apa bedamu dengan Adam Smith?"],
+    responses: {
+      "marjinal": "Analisis marjinal adalah jantung dari pemikiran Neoklasik! Setiap keputusan ekonomi yang rasional dibuat berdasarkan perbandingan manfaat TAMBAHAN (marginal benefit) versus biaya TAMBAHAN (marginal cost) dari satu unit lagi. Bukan dari total. Contoh sederhana: apakah makan sepiring nasi lagi worth it? Jawaban: kalau rasa lapar yang berkurang (manfaat marjinal) lebih besar dari harganya (biaya marjinal) — ya! Keputusan optimal terjadi saat MB = MC.",
+      "utilitas": "Utilitas marjinal adalah kepuasan TAMBAHAN yang kamu rasakan dari satu unit konsumsi berikutnya. Dan hukumnya: utilitas marjinal selalu MENURUN! Gelas pertama es teh di hari panas — sangat menyegarkan! Gelas kedua — lumayan. Gelas kelima — sudah tidak terasa nikmat. Inilah yang menjelaskan mengapa kurva permintaan miring ke bawah: semakin banyak suatu barang, konsumen hanya mau membayar lebih sedikit untuk unit tambahannya.",
+      "harga": "Harga terbentuk dari DUEL antara dua kekuatan: permintaan (sisi pembeli) dan penawaran (sisi penjual). Saya menganalogikannya seperti gunting — dua mata gunting sama-sama memotong! Adam Smith terlalu fokus pada sisi penawaran (biaya produksi). Kaum Neoklasik sebelum saya terlalu fokus pada sisi permintaan (utilitas). Saya menyatukan keduanya: harga keseimbangan adalah titik di mana kurva permintaan dan penawaran berpotongan.",
+      "adam smith": "Saya sangat menghormati pendahulu saya, Adam Smith! Ia membangun fondasi yang luar biasa. Bedanya: Smith lebih bersifat deskriptif dan historis, menjelaskan fenomena ekonomi dengan narasi. Saya mengembangkannya lebih jauh dengan alat matematis dan grafis yang presisi — kurva, fungsi, persamaan. Ekonomi bukan hanya ilmu sosial, tapi juga harus setepat ilmu alam. Inilah 'revolusi marjinal' yang kami bawa.",
+      "default": "Pertanyaan yang menarik! Sebagai pendiri Mazhab Cambridge, saya percaya bahwa ekonomi harus dianalisis dengan presisi matematis. Analisis marjinal adalah alat utama saya — setiap keputusan ekonomi optimal terjadi di titik di mana manfaat marjinal sama dengan biaya marjinal. Saya juga dikenal dengan kurva permintaan-penawaran yang masih menjadi alat analisis standar ekonomi hingga hari ini. Ingin tahu lebih lanjut tentang konsep tertentu?"
+    }
+  },
+  keynes: {
+    name: "John Maynard Keynes",
+    role: "Bapak Ekonomi Makro · Inggris · 1883–1946",
+    avatar: "🎩", color: "#185FA5",
+    greeting: "Halo! Saya Keynes. Saya hidup di zaman yang paling gelap dalam sejarah ekonomi — Depresi Besar 1929. Jutaan orang menganggur, pasar gagal, dan teori klasik tidak punya jawaban. Saya hadir untuk mengubah segalanya. Mari kita diskusikan mengapa pasar tidak bisa selalu diserahkan sendiri!",
+    quick: ["Kenapa kamu kritik Adam Smith?","Apa itu permintaan agregat?","Jelaskan peran pemerintah","Apa paradoks hemat?"],
+    responses: {
+      "adam smith": "Saya sangat menghormati Adam Smith — ia genius! Tapi teori klasiknya gagal menjelaskan Depresi Besar 1929. Kaum klasik bilang: 'Tunggu saja, pasar akan menyeimbangkan sendiri.' Tapi saat 25% orang Amerika menganggur dan ribuan bank kolaps — berapa lama kita harus menunggu? Itulah kenapa saya berkata: 'In the long run, we are all dead!' Pasar kadang gagal, dan pemerintah harus bertindak sekarang, bukan nanti.",
+      "permintaan agregat": "Permintaan agregat adalah total pengeluaran seluruh sektor dalam perekonomian: C (Konsumsi rumah tangga) + I (Investasi swasta) + G (Pengeluaran pemerintah) + NX (Ekspor dikurang Impor). Inilah yang menentukan berapa banyak barang dan jasa yang diproduksi, dan berapa banyak orang yang bekerja. Ketika permintaan agregat turun — misalnya karena semua orang panik dan menabung — produksi turun, pengangguran meledak. Solusinya: naikkan G!",
+      "pemerintah": "Pemerintah bukan musuh pasar — ia adalah penyelamat ketika pasar gagal! Saat resesi, konsumen takut belanja, perusahaan takut investasi — ekonomi macet. Di sinilah pemerintah harus masuk: belanjakan uang untuk infrastruktur, proyek padat karya, subsidi. Efek pengganda (multiplier effect): setiap rupiah yang dibelanjakan pemerintah menghasilkan lebih dari satu rupiah pendapatan nasional karena uang itu berputar di masyarakat.",
+      "paradoks hemat": "Ini fenomena yang sangat menarik dan paradoksal! Secara individu, menabung adalah tindakan yang bijaksana dan prudent. Tapi ketika SEMUA orang menabung sekaligus — terutama saat resesi — konsumsi turun drastis, permintaan agregat jatuh, perusahaan mengurangi produksi, PHK massal terjadi, dan akhirnya semua orang menjadi lebih miskin karena pendapatan mereka juga turun. Yang baik untuk satu orang ternyata buruk untuk semua. Ini yang saya sebut Paradox of Thrift!",
+      "default": "Pertanyaan yang menarik! Saya Keynes, dan keyakinan terbesar saya adalah bahwa pasar tidak selalu bisa diserahkan untuk menyeimbangkan diri sendiri. Terbukti di Depresi Besar 1929 — teori klasik tidak punya solusi. Saya memperkenalkan konsep permintaan agregat, peran aktif pemerintah, dan kebijakan fiskal sebagai alat stabilisasi ekonomi. Kebijakan stimulus yang dipakai hampir semua negara saat krisis ekonomi dan pandemi COVID berakar dari pemikiran saya. Apa yang ingin kamu diskusikan?"
+    }
+  },
+  kahan: {
+    name: "Daniel Kahneman",
+    role: "Behavioral Economist · Israel-Amerika · 1934–2024",
+    avatar: "🧠", color: "#7C3A6B",
+    greeting: "Halo! Saya Daniel Kahneman — psikolog yang memenangkan Nobel Ekonomi 2002 meskipun tidak pernah mengambil satu pun mata kuliah ekonomi! Bersama Amos Tversky, saya menemukan bahwa manusia tidak selalu rasional. Kita penuh bias. Dan itu mengubah segalanya dalam ilmu ekonomi!",
+    quick: ["Apa itu loss aversion?","Jelaskan Prospect Theory","Apa itu anchoring bias?","Sistem 1 vs Sistem 2?"],
+    responses: {
+      "loss aversion": "Loss aversion — atau ketakutan rugi — adalah salah satu temuan terpenting saya bersama Amos Tversky! Secara psikologis, manusia merasakan kerugian dua kali lebih kuat dibanding keuntungan yang setara nilainya. Kehilangan Rp100.000 terasa jauh lebih menyakitkan daripada menyenangkannya mendapatkan Rp100.000 ekstra. Ini menjelaskan banyak perilaku 'irasional': kenapa investor menahan saham yang rugi terlalu lama, kenapa orang takut berinvestasi meski return-nya bagus.",
+      "prospect theory": "Prospect Theory adalah karya terbesar saya bersama Tversky (1979)! Teori ini menjelaskan bagaimana manusia BENAR-BENAR membuat keputusan di bawah risiko dan ketidakpastian — bukan bagaimana seharusnya menurut teori utilitas klasik. Tiga temuan kunci: (1) Manusia mengevaluasi hasil relatif terhadap titik referensi, bukan nilai absolut. (2) Kerugian terasa lebih besar dari keuntungan setara (loss aversion). (3) Probabilitas kecil cenderung dibesar-besarkan, probabilitas besar dikecil-kecilkan.",
+      "anchoring": "Anchoring bias adalah kecenderungan pikiran kita untuk sangat bergantung pada informasi pertama yang kita terima! Eksperimen sederhana: saya minta orang memutar roda angka (1–100) dulu, lalu tebak berapa persentase negara Afrika di PBB. Orang yang dapat angka tinggi dari roda akan menebak lebih tinggi — meski roda itu jelas tidak relevan! Di dunia nyata: harga 'asli' yang dicoret di diskon, angka awal dalam negosiasi gaji, atau label harga pertama yang kamu lihat — semuanya menganchor pikiranmu.",
+      "sistem": "Ini konsep yang saya popularisasi dalam buku Thinking, Fast and Slow (2011)! Ada dua sistem berpikir: Sistem 1 — berpikir cepat, otomatis, intuitif, emosional, sering membuat shortcuts (heuristik). Inilah yang dominan dalam keputusan sehari-hari. Sistem 2 — berpikir lambat, analitis, logis, butuh usaha sadar. Inilah yang diasumsikan selalu aktif oleh ekonomi klasik! Masalahnya: Sistem 2 sangat malas. Kita sering berpikir bahwa kita memakai Sistem 2, padahal Sistem 1 yang berkuasa.",
+      "default": "Pertanyaan yang menarik! Saya Kahneman, dan seluruh karir saya didedikasikan untuk memahami bagaimana manusia BENAR-BENAR mengambil keputusan — bukan bagaimana teori ekonomi mengasumsikan mereka bertindak. Kita penuh bias kognitif: loss aversion, anchoring, availability heuristic, framing effect, dan masih banyak lagi. Semua ini menantang asumsi 'homo economicus' yang telah mendominasi ekonomi selama ratusan tahun. Ini yang melahirkan Behavioral Economics! Apa yang ingin kamu pelajari lebih dalam?"
+    }
+  }
+};
+
+// ══════════════════════════════════════════════════════
+// DATA DEBAT
+// ══════════════════════════════════════════════════════
+const DEBATE_SCRIPTS = {
+  "peran-pemerintah": {
+    smith: [
+      "Pasar bebas adalah mekanisme terbaik yang pernah ada dalam sejarah manusia! Ketika individu bebas mengejar kepentingannya sendiri, 'invisible hand' secara alami mengalokasikan sumber daya secara efisien. Pemerintah yang terlalu banyak campur tangan hanya menciptakan distorsi, KKN, dan ketidakefisienan. Laissez faire — biarkan pasar bekerja sendiri!",
+      "Saya tidak menolak peran pemerintah sepenuhnya! Tugas pemerintah adalah menegakkan hukum, menjaga keamanan, dan menyediakan barang publik yang tidak bisa disediakan pasar — seperti jalan, pertahanan, dan pendidikan dasar. Tapi campur tangan dalam harga, produksi, atau perdagangan? Itu merusak mekanisme pasar yang indah.",
+      "Lihat sejarah! Negara-negara yang menerapkan pasar bebas — seperti Inggris di era Victorian — mengalami pertumbuhan ekonomi yang belum pernah ada sebelumnya. Kemiskinan turun, inovasi meledak, standar hidup naik. Sementara merkantilisme yang mengandalkan kontrol pemerintah justru menciptakan stagnasi dan korupsi."
+    ],
+    keynes: [
+      "Saya sangat menghormati pendahulu saya, Adam Smith! Tapi teorinya gagal di dunia nyata. Depresi Besar 1929: 25% orang Amerika menganggur, bank-bank kolaps, dan kaum klasik bilang 'tunggu saja, pasar akan pulih sendiri.' Kami menunggu — dan jutaan orang menderita bertahun-tahun. Pasar TIDAK selalu menyeimbangkan diri sendiri!",
+      "Pemerintah HARUS hadir sebagai stabilisator ketika pasar gagal! Ketika konsumen takut belanja dan pengusaha takut investasi, ekonomi masuk lingkaran setan deflasi. Satu-satunya yang bisa memutus lingkaran itu adalah pengeluaran pemerintah — bangun infrastruktur, beri pekerjaan, pompa daya beli masyarakat. Ini bukan sosialisme, ini pragmatisme!",
+      "Dan saya bukan anti-pasar! Saya percaya pasar adalah mekanisme yang luar biasa dalam kondisi normal. Tapi ekonomi kadang jatuh ke 'equilibrium buruk' dengan pengangguran tinggi yang berlangsung lama. Di sinilah pemerintah punya peran yang sah dan krusial. Seperti dokter: pasar adalah tubuh yang sehat, pemerintah adalah dokter yang turun tangan saat tubuh sakit."
+    ],
+    neo: [
+      "Saya di antara keduanya! Pasar memang efisien dalam mengalokasikan sumber daya melalui mekanisme harga dan analisis marjinal. Tapi ada kegagalan pasar yang nyata: eksternalitas, barang publik, informasi asimetris. Di sini pemerintah punya peran korektif yang legitimate.",
+      "Keseimbangan pasar yang saya modelkan memang optimal secara teoritis — tapi itu dengan asumsi kompetisi sempurna dan informasi penuh. Kenyataannya? Pasar tidak selalu sempurna. Monopoli, polusi, kemiskinan informasi — ini membutuhkan intervensi pemerintah yang tepat sasaran dan terukur, bukan yang brutal dan spekulatif.",
+      "Kuncinya adalah PROPORSI dan KUALITAS intervensi. Pemerintah yang baik memperbaiki kegagalan pasar tanpa menghancurkan insentif. Regulasi anti-monopoli, pajak Pigouvian untuk eksternalitas negatif, subsidi untuk barang publik — ini bukan musuh pasar, ini penyempurna pasar."
+    ],
+    kahan: [
+      "Debat ini menarik — tapi keduanya mengasumsikan agen ekonomi yang rasional! Saya dan Tversky telah membuktikan bahwa manusia penuh bias kognitif. Pasar yang 'bebas' bisa saja menghasilkan keputusan kolektif yang irasional — gelembung aset, kepanikan finansial, perilaku kawanan.",
+      "Pemerintah punya peran unik yang tidak dipahami Smith maupun Keynes: merancang 'arsitektur pilihan' yang lebih baik! Bukan melarang atau memaksa, tapi merancang default yang mendorong keputusan yang lebih baik. Itulah Nudge Theory — kebijakan berbasis perilaku yang jauh lebih efektif dari regulasi tradisional.",
+      "Jadi jawaban saya: pemerintah harus hadir — bukan hanya sebagai regulator à la Keynes atau wasit à la Smith, tapi sebagai 'arsitek pilihan' yang memahami psikologi manusia. Contoh nyata: tabungan pensiun otomatis-opt-out meningkatkan kepesertaan dari 60% ke 90%+ tanpa satu pun undang-undang baru!"
+    ]
+  },
+  "rasionalitas": {
+    smith: ["Manusia memang tidak sempurna, tapi dalam konteks pasar yang kompetitif, mereka bertindak cukup rasional untuk memenuhi kepentingan mereka sendiri. Dan itulah yang penting! Tidak perlu rasionalitas sempurna — cukup bahwa masing-masing orang tahu apa yang terbaik untuk dirinya sendiri lebih baik dari pemerintah.", "Saya tidak pernah mengklaim manusia itu robot logika! Dalam The Theory of Moral Sentiments, saya justru membahas panjang lebar tentang empati, simpati, dan emosi manusia. Tapi dalam konteks pasar, kepentingan diri sendiri yang menjadi pendorong — dan itu cukup untuk menghasilkan efisiensi.", "Meski ada bias dan kesalahan individu, pasar dalam jangka panjang mengoreksi dirinya sendiri. Harga yang salah akan menarik arbitrageur. Perusahaan yang tidak efisien akan bangkrut. Mekanisme ini lebih andal dari perencana pemerintah yang juga tidak sempurna!"],
+    kahan: ["Dengan hormat kepada Smith — tapi bukti empiris kami sangat jelas! Dalam ribuan eksperimen yang saya lakukan bersama Tversky, manusia secara konsisten melanggar aksioma-aksioma rasionalitas yang diasumsikan teori ekonomi klasik.", "Manusia bukan irasional secara acak — mereka irasional secara SISTEMATIS dan DAPAT DIPREDIKSI! Loss aversion, anchoring, framing effect, availability heuristic — semua ini adalah pola bias yang konsisten. Dan ini mengubah segalanya: kebijakan ekonomi yang mengabaikan psikologi manusia tidak akan efektif.", "Yang lebih mengkhawatirkan: manusia sering tidak menyadari bias mereka sendiri! Kita pikir kita berpikir rasional dengan Sistem 2, padahal Sistem 1 yang emosional dan intuitif yang mengendalikan sebagian besar keputusan kita. Ini bukan kritik terhadap manusia — ini tentang memahami bagaimana pikiran kita benar-benar bekerja."],
+    neo: ["Dalam model-model matematika saya, saya menggunakan asumsi rasionalitas sebagai simplifikasi yang berguna, bukan klaim tentang realita. Ekonom yang baik tahu batas asumsi modelnya!", "Utilitas marjinal menurun — konsep kunci saya — sebenarnya mengandung pengakuan bahwa preferensi manusia tidak linear dan sederhana. Ini lebih realistis dari teori utilitas klasik sebelumnya.", "Mungkin yang dibutuhkan adalah jembatan antara presisi analitis Neoklasik dengan wawasan psikologis Behavioral Economics. Keduanya tidak harus bertentangan — keduanya menganalisis dimensi yang berbeda dari perilaku manusia."],
+    keynes: ["Dalam analisis makroekonomi saya, saya memperkenalkan konsep 'animal spirits' — dorongan psikologis irasional yang mendorong investasi dan konsumsi! Pengusaha berinvestasi bukan hanya karena kalkulasi rasional — tapi karena optimisme, kepercayaan, bahkan kegembiraan.", "Depresi Besar 1929 adalah bukti nyata bahwa kepanikan kolektif yang irasional bisa menghancurkan perekonomian yang sebelumnya sehat. Ekspektasi dan psikologi massa adalah variabel ekonomi yang nyata dan penting!", "Saya lebih dekat dengan Kahneman dalam hal ini daripada Smith! Psikologi dan ekspektasi adalah inti dari makroekonomi. Kebijakan pemerintah tidak hanya soal angka — tapi juga soal mempengaruhi keyakinan dan ekspektasi publik."]
+  },
+  "pasar-bebas": {
+    smith: ["Pasar bebas bukan sekadar teori — ia adalah sistem yang terbukti menghasilkan kemakmuran! Revolusi industri Inggris, kebangkitan ekonomi Asia Timur, pertumbuhan Amerika — semua bermula dari kebebasan ekonomi individu dalam pasar yang kompetitif.", "Prinsip laissez faire bukan berarti anarki ekonomi! Ada aturan main: penegakan kontrak, perlindungan hak milik, hukum yang adil. Tapi dalam batas-batas itu, biarkan jutaan individu membuat keputusan mereka sendiri. Hasilnya jauh lebih baik dari perencanaan terpusat manapun.", "Harga adalah informasi! Ketika harga naik, ia memberi sinyal kepada produsen untuk meningkatkan produksi dan kepada konsumen untuk berhemat — tanpa perlu arahan pemerintah apapun. Tidak ada komite perencanaan yang bisa memproses informasi sebanyak dan secepat mekanisme harga."],
+    keynes: ["Pasar bebas luar biasa dalam kondisi normal! Saya setuju dengan Smith soal itu. Tapi 'kondisi normal' tidak selalu terjadi. Depresi Besar membuktikan bahwa pasar bisa terjebak dalam keseimbangan buruk yang berlangsung bertahun-tahun.", "Masalah pasar bebas: ia tidak punya mekanisme internal untuk mendistribusikan kembali pendapatan secara adil, tidak punya cara untuk menyediakan barang publik, dan tidak bisa mencegah gelembung aset yang destruktif. Di sinilah peran pemerintah yang tak tergantikan.", "Dan yang sering dilupakan: pasar bebas membutuhkan institusi yang kuat! Bank sentral, regulasi keuangan, jaring pengaman sosial — semua ini justru membuat pasar bebas bisa berfungsi dengan stabil. Tanpa ini, pasar bebas cenderung menciptakan boom-bust cycle yang menghancurkan."],
+    neo: ["Pasar bebas dengan kompetisi sempurna menghasilkan alokasi optimal — secara matematis terbukti melalui teorema welfare ekonomi! Tapi 'kompetisi sempurna' adalah idealisasi. Kenyataannya ada monopoli, oligopoli, eksternalitas.", "Solusi saya: perkuat kompetisi, koreksi kegagalan pasar dengan instrumen yang tepat sasaran, dan biarkan mekanisme harga bekerja. Bukan menggantikan pasar, tapi menyempurnakannya.", "Kurva permintaan-penawaran saya menunjukkan bahwa keseimbangan pasar adalah hasil yang efisien secara Pareto dalam kondisi ideal. Tugas kita adalah menciptakan kondisi yang sedekat mungkin dengan ideal itu — bukan meninggalkan mekanisme pasar."],
+    kahan: ["Pasar bebas mengasumsikan agen yang rasional dengan preferensi yang stabil dan informasi yang cukup. Tapi bukti behavioral economics menunjukkan ketiga asumsi itu sering tidak terpenuhi!", "Ada kegagalan pasar yang berakar dari psikologi: konsumen yang mudah tertipu marketing, investor yang terbawa euforia bubble, masyarakat yang underestimate risiko jangka panjang seperti perubahan iklim atau kurang menabung untuk pensiun.", "Solusi saya bukan menolak pasar bebas — tapi memperbaikinya dengan wawasan behavioral. Transparansi informasi, default yang cerdas, label yang jujur, cooling-off period untuk keputusan besar — ini membuat pasar bebas bekerja lebih baik sesuai kepentingan nyata konsumen."]
+  },
+  "krisis-ekonomi": {
+    keynes: ["Krisis ekonomi terjadi ketika permintaan agregat runtuh! Ini bisa dipicu oleh kepanikan perbankan, jatuhnya ekspektasi investasi, atau — seperti yang saya sebut — 'animal spirits' yang berubah dari optimisme ke pesimisme secara tiba-tiba. Depresi 1929 adalah contoh sempurna: semua pihak berhenti belanja secara bersamaan.", "Mekanismenya: penurunan investasi → pengangguran naik → pendapatan turun → konsumsi turun → permintaan turun → investasi turun lagi. Lingkaran setan ini tidak bisa dipecahkan oleh pasar sendiri! Butuh intervensi dari luar — yaitu pemerintah — untuk memutus rantai ini.", "Solusi saya yang terbukti: stimulus fiskal agresif. Pemerintah harus menjadi 'spender of last resort'. Defisit anggaran saat krisis bukan masalah — itu investasi untuk memulihkan ekonomi. Bayarnya nanti saat ekonomi sudah pulih."],
+    smith: ["Krisis ekonomi sering kali adalah akibat dari kebijakan pemerintah yang salah, bukan kegagalan pasar bebas! Inflasi moneter, tarif perdagangan yang berlebihan, regulasi yang mendistorsi sinyal harga — semua ini menciptakan ketidakseimbangan yang berujung krisis.", "Pasar bebas memiliki mekanisme self-correcting yang alami. Harga yang terlalu tinggi akan turun. Bisnis yang tidak efisien akan bangkrut memberi ruang bagi yang lebih efisien. Proses ini memang menyakitkan jangka pendek, tapi perlu untuk pemulihan struktural jangka panjang.", "Krisis yang paling dalam biasanya mengikuti periode boom yang didorong oleh kredit murah dan kebijakan moneter yang longgar — bukan oleh pasar bebas yang sesungguhnya!"],
+    kahan: ["Behavioral economics menambahkan dimensi baru dalam memahami krisis: herding behavior dan self-fulfilling prophecy! Ketika semua orang percaya krisis akan terjadi dan bertindak sesuai keyakinan itu — tarik uang dari bank, jual saham, hentikan investasi — krisis pun benar-benar terjadi.", "Gelembung aset — dari Tulip Mania 1637 hingga krisis subprime 2008 — adalah manifestasi bias kognitif kolektif: overconfidence, representativeness heuristic (extrapolasi tren), dan loss aversion yang terlambat bekerja.", "Pencegahan krisis membutuhkan pemahaman psikologi massa, bukan hanya model matematika. Bank sentral harus menjadi 'psikolog kolektif' yang mengelola ekspektasi dan kepercayaan publik — bukan hanya mengatur suku bunga."],
+    neo: ["Krisis terjadi ketika ada divergensi besar antara harga aset dan nilai fundamentalnya — apa yang kita sebut misalokasi sumber daya dalam skala besar.", "Model keseimbangan umum saya menunjukkan bahwa perekonomian memiliki titik keseimbangan yang stabil. Tapi gangguan eksternal yang cukup besar bisa mendorong sistem ke keseimbangan yang lebih buruk. Tugas kebijakan adalah mengembalikan sistem ke keseimbangan optimalnya.", "Reformasi struktural yang meningkatkan fleksibilitas harga dan upah — bukan hanya stimulus jangka pendek — adalah kunci pemulihan yang berkelanjutan dari krisis ekonomi."]
+  },
+  "kemakmuran": {
+    smith: ["Sumber sejati kemakmuran suatu bangsa adalah PRODUKTIVITAS TENAGA KERJA! Bukan emas, bukan surplus perdagangan seperti yang dipikirkan kaum merkantilis. Ketika tenaga kerja bisa menghasilkan lebih banyak dalam waktu yang sama — itulah kemakmuran. Dan kunci produktivitas adalah pembagian kerja dan akumulasi kapital.", "Perdagangan bebas antarbangsa adalah pengganda kemakmuran! Ketika setiap negara berspesialisasi dalam apa yang paling efisien diproduksinya, dan kemudian berdagang — semua pihak diuntungkan. Proteksionisme dan merkantilisme hanya menciptakan ketidakefisienan dan kemiskinan buatan.", "Kemakmuran dimulai dari kebebasan individu! Ketika setiap orang bebas bekerja, berdagang, dan mengembangkan kemampuannya — agregat dari jutaan keputusan individual ini menghasilkan kemakmuran nasional yang luar biasa. Invisible hand bekerja pada skala peradaban."],
+    neo: ["Kemakmuran berkelanjutan membutuhkan alokasi sumber daya yang EFISIEN! Ketika harga mencerminkan kelangkaan sejati dan biaya marjinal, sumber daya mengalir ke penggunaan yang paling bernilai. Inilah yang dimaksud Pareto efficiency — tidak ada yang bisa dibuat lebih baik tanpa membuat orang lain lebih buruk.", "Investasi dalam modal manusia — pendidikan, kesehatan, keterampilan — adalah kunci kemakmuran modern! Ini yang membedakan negara maju dari negara berkembang bukan hanya kekayaan alam, tapi kualitas kapital manusianya.", "Kemakmuran juga butuh institusi yang kuat: hak milik yang terlindungi, kontrak yang bisa dipaksakan, sistem hukum yang adil. Ini menciptakan insentif yang tepat bagi investasi dan inovasi jangka panjang."],
+    keynes: ["Kemakmuran bukan hanya soal produksi — tapi soal distribusi dan permintaan! Sebuah ekonomi bisa sangat produktif tapi tetap miskin jika daya beli masyarakat tidak mencukupi untuk menyerap produksinya. Full employment — lapangan kerja penuh — adalah prasyarat kemakmuran sejati.", "Peran pemerintah dalam membangun kemakmuran: investasi publik dalam infrastruktur, pendidikan, riset dan pengembangan yang tidak akan dilakukan sektor swasta karena horizon waktu yang terlalu panjang dan risiko yang terlalu besar.", "Dan kemakmuran butuh stabilitas! Boom-bust cycle yang tak terkendali menghancurkan kapital, kepercayaan, dan kesejahteraan. Kebijakan makroekonomi yang baik — fiskal dan moneter — adalah fondasi kemakmuran yang berkelanjutan."],
+    kahan: ["Kemakmuran sejati harus diukur dari kesejahteraan subjektif manusia — bukan hanya PDB! Penelitian happiness economics menunjukkan bahwa setelah kebutuhan dasar terpenuhi, tambahan pendapatan memberikan tambahan kebahagiaan yang semakin kecil — persis seperti utilitas marjinal yang menurun.", "Banyak kebijakan yang 'meningkatkan PDB' justru tidak meningkatkan kesejahteraan subjektif: jam kerja yang terlalu panjang, komuter yang melelahkan, konsumsi yang kompetitif. Kita perlu metrik kemakmuran yang lebih holistik.", "Dan biases kita soal kemakmuran sendiri bisa menipu! Present bias membuat kita underinvest untuk masa depan. Adaptation level phenomenon membuat kebahagiaan dari kekayaan lebih bersifat sementara dari yang kita bayangkan. Memahami psikologi kemakmuran adalah kunci untuk merancang kebijakan yang benar-benar meningkatkan kualitas hidup manusia."]
+  }
+};
+
+// ══════════════════════════════════════════════════════
+// DATA KUIS
+// ══════════════════════════════════════════════════════
+const QUESTIONS = [
+  { cat:"Sejarah Ekonomi", q:"Siapa tokoh yang pertama kali menciptakan istilah 'oikonomia' yang menjadi asal kata ekonomi?", opts:["Plato","Aristoteles","Xenophon","Thomas Aquinas"], ans:2, exp:"Xenophon (440–355 SM) menciptakan istilah oikonomia dari kata oikos (rumah) + nomos (aturan). Ia menggunakannya untuk menggambarkan pengelolaan rumah tangga yang baik." },
+  { cat:"Ekonomi Klasik", q:"Konsep 'Invisible Hand' yang dikemukakan Adam Smith menjelaskan bahwa...", opts:["Pemerintah harus mengatur harga agar stabil","Kepentingan pribadi di pasar kompetitif secara tidak langsung menguntungkan masyarakat","Perdagangan internasional selalu merugikan negara berkembang","Pembagian kerja harus diatur oleh negara"], ans:1, exp:"Invisible hand adalah mekanisme di mana individu yang mengejar kepentingan pribadi di pasar kompetitif, tanpa disadari, mendorong hasil yang menguntungkan masyarakat secara keseluruhan." },
+  { cat:"Ekonomi Klasik", q:"Adam Smith dalam The Wealth of Nations (1776) berpendapat bahwa sumber kemakmuran sejati suatu bangsa adalah...", opts:["Akumulasi emas dan surplus perdagangan","Kekayaan sumber daya alam","Produktivitas tenaga kerja dan pembagian kerja","Bantuan dan pinjaman luar negeri"], ans:2, exp:"Smith menentang merkantilisme yang mengutamakan emas. Menurutnya, kemakmuran sejati berasal dari produktivitas tenaga kerja yang ditingkatkan melalui pembagian kerja (division of labour)." },
+  { cat:"Neoklasik", q:"Prinsip analisis marjinal dalam Mazhab Neoklasik menyatakan bahwa keputusan ekonomi optimal terjadi ketika...", opts:["Total keuntungan lebih besar dari total biaya","Manfaat marjinal sama dengan biaya marjinal (MB = MC)","Harga barang sama dengan biaya produksinya","Permintaan sama dengan penawaran"], ans:1, exp:"Analisis marjinal adalah jantung Neoklasik: keputusan rasional dibuat berdasarkan perbandingan manfaat TAMBAHAN (marginal benefit) vs biaya TAMBAHAN (marginal cost). Optimal terjadi saat MB = MC." },
+  { cat:"Neoklasik", q:"Hukum Gossen Pertama yang dikembangkan dalam Mazhab Neoklasik menyatakan bahwa...", opts:["Harga barang ditentukan oleh biaya produksinya","Semakin banyak suatu barang dikonsumsi, utilitas marjinalnya semakin menurun","Penawaran selalu menciptakan permintaannya sendiri","Pasar selalu mencapai keseimbangan secara otomatis"], ans:1, exp:"Hukum Gossen Pertama (Law of Diminishing Marginal Utility): semakin banyak suatu barang dikonsumsi, kepuasan tambahan (utilitas marjinal) yang dirasakan akan semakin kecil. Contoh: gelas air pertama vs kelima di hari panas." },
+  { cat:"Keynesian", q:"John Maynard Keynes mengembangkan teorinya terutama sebagai respons terhadap...", opts:["Revolusi industri Inggris abad ke-18","Depresi Besar (Great Depression) tahun 1929","Perang Dunia I dan dampak ekonominya","Kemiskinan di negara-negara berkembang"], ans:1, exp:"Keynes mengembangkan teorinya merespons Depresi Besar 1929 yang membuat pengangguran meledak hingga 25% di Amerika. Teori klasik tidak bisa memberikan solusi, dan Keynes hadir dengan pendekatan baru." },
+  { cat:"Keynesian", q:"'Paradox of Thrift' yang dikemukakan Keynes berarti...", opts:["Menabung selalu lebih baik daripada berbelanja","Menabung baik untuk individu, tapi jika semua orang menabung sekaligus saat resesi, ekonomi bisa memburuk","Pemerintah harus melarang masyarakat menabung saat krisis","Investasi tidak pernah menguntungkan dalam jangka panjang"], ans:1, exp:"Paradox of Thrift: apa yang baik untuk satu individu (menabung) bisa buruk untuk semua jika dilakukan bersamaan. Jika semua orang menabung saat resesi: konsumsi turun → produksi turun → pengangguran naik → pendapatan turun." },
+  { cat:"Keynesian", q:"Rumus permintaan agregat (Aggregate Demand) menurut Keynes adalah...", opts:["AD = Y + I + G","AD = C + I + G + NX","AD = C + S + T","AD = GDP - Inflasi"], ans:1, exp:"AD = C (Konsumsi) + I (Investasi) + G (Pengeluaran Pemerintah) + NX (Net Ekspor = Ekspor - Impor). Ini adalah penentu utama output nasional dan tingkat pengangguran menurut Keynes." },
+  { cat:"Behavioral Economics", q:"Daniel Kahneman memenangkan Nobel Ekonomi 2002 meskipun...", opts:["Lahir di negara berkembang","Tidak pernah mengambil kuliah ekonomi satu pun — ia adalah psikolog","Tidak pernah menerbitkan buku tentang ekonomi","Berusia lebih dari 80 tahun saat menerima Nobel"], ans:1, exp:"Kahneman adalah psikolog yang memenangkan Nobel Ekonomi — suatu pencapaian luar biasa! Ia bersama Amos Tversky mengembangkan Prospect Theory yang menjelaskan bagaimana manusia benar-benar membuat keputusan." },
+  { cat:"Behavioral Economics", q:"'Loss Aversion' dalam Behavioral Economics berarti...", opts:["Manusia selalu menghindari risiko apapun kondisinya","Kerugian dirasakan sekitar 2 kali lebih kuat dibanding keuntungan yang setara nilainya","Manusia tidak bisa merasakan keuntungan finansial","Investasi selalu terasa seperti kerugian"], ans:1, exp:"Loss aversion adalah temuan kunci Kahneman & Tversky: secara psikologis, kerugian terasa 2× lebih menyakitkan dibanding keuntungan yang sama besar. Ini menjelaskan banyak perilaku 'irasional' seperti menahan saham rugi terlalu lama." },
+  { cat:"Perbandingan Aliran", q:"Perbedaan utama antara Mazhab Klasik (Adam Smith) dan Mazhab Keynesian adalah...", opts:["Klasik percaya pada pasar bebas dan minimal intervensi pemerintah; Keynesian menekankan peran aktif pemerintah saat krisis","Klasik mendukung proteksionisme; Keynesian mendukung perdagangan bebas","Klasik menggunakan matematika; Keynesian menggunakan pendekatan historis","Tidak ada perbedaan signifikan antara keduanya"], ans:0, exp:"Perbedaan fundamental: Klasik (Smith) percaya pasar bebas dan invisible hand cukup mengatur ekonomi dengan minimal intervensi. Keynesian percaya pasar bisa gagal dan pemerintah harus aktif melakukan stimulus saat resesi." },
+  { cat:"Sejarah Ekonomi", q:"Era Merkantilisme (1500–1750) berpandangan bahwa kekayaan suatu negara diukur dari...", opts:["Jumlah penduduknya yang produktif","Luas wilayah dan sumber daya alam","Akumulasi emas dan surplus perdagangan luar negeri","Tingkat teknologi dan inovasinya"], ans:2, exp:"Merkantilisme: kekayaan negara = jumlah emas yang dimiliki. Caranya: ekspor sebanyak mungkin, impor sesedikit mungkin (surplus perdagangan). Tokoh: Thomas Mun, Jean Baptiste Colbert." },
+  { cat:"Neoklasik", q:"Alfred Marshall menganalogikan penentuan harga seperti gunting karena...", opts:["Harga selalu memotong keuntungan produsen","Dua mata gunting = dua sisi pasar: permintaan DAN penawaran sama-sama menentukan harga","Harga bisa naik dan turun dengan cepat seperti gunting bergerak","Hanya pemerintah yang bisa memotong harga di pasar"], ans:1, exp:"Marshall dengan brilian menganalogikan dua mata gunting: satu mata = permintaan (utilitas marjinal/sisi pembeli), satu mata = penawaran (biaya produksi/sisi penjual). Keduanya sama-sama menentukan harga keseimbangan." },
+  { cat:"Behavioral Economics", q:"'Nudge Theory' yang dikembangkan Richard Thaler berarti...", opts:["Memaksa masyarakat membuat keputusan yang benar melalui hukum","Merancang pilihan default yang mendorong keputusan lebih baik tanpa larangan atau paksaan","Memberikan insentif finansial besar untuk mengubah perilaku","Menghukum perilaku ekonomi yang salah"], ans:1, exp:"Nudge = 'dorongan kecil'. Merancang arsitektur pilihan agar orang cenderung memilih opsi yang lebih baik untuk diri mereka, TANPA melarang atau memaksa. Contoh: tabungan pensiun opt-out meningkatkan kepesertaan dari 60% ke 90%+." },
+  { cat:"Keynesian", q:"Menurut Keynes, apa yang harus dilakukan pemerintah saat terjadi resesi ekonomi?", opts:["Mengurangi pengeluaran dan menaikkan pajak untuk menyeimbangkan anggaran","Meningkatkan pengeluaran pemerintah dan/atau menurunkan pajak untuk mendorong permintaan agregat","Membiarkan pasar menyeimbangkan diri sendiri","Menaikkan suku bunga untuk mencegah inflasi"], ans:1, exp:"Kebijakan fiskal Keynesian saat resesi: naikkan pengeluaran pemerintah (G) dan/atau turunkan pajak untuk meningkatkan disposable income. Ini mendorong permintaan agregat, meningkatkan produksi, dan mengurangi pengangguran melalui efek multiplier." },
+];
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let currentTokoh = 'smith';
+let totalScore = 0;
+let quizScore = 0;
+let quizIndex = 0;
+let quizCorrect = 0;
+let quizWrong = 0;
+let quizAnswered = false;
+let debater1 = 'smith';
+let debater2 = 'keynes';
+let debateTopic = 'peran-pemerintah';
+
+// ══════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.htab').forEach(el => el.classList.remove('active'));
+  const pageMap = { home:'home', chat:'chat', debate:'debate', quiz:'quiz' };
+  document.getElementById(pageMap[p]).classList.add('active');
+  const tabIdx = ['home','chat','debate','quiz'].indexOf(p);
+  document.querySelectorAll('.htab')[tabIdx].classList.add('active');
+  if (p === 'chat') { initChat(); }
+}
+
+function startChat(tokoh) {
+  currentTokoh = tokoh;
+  showPage('chat');
+}
+
+// ══════════════════════════════════════════════════════
+// CHAT
+// ══════════════════════════════════════════════════════
+let chatHistory = {};
+
+function initChat() {
+  switchTokoh(currentTokoh);
+}
+
+function switchTokoh(t) {
+  currentTokoh = t;
+  const tk = TOKOH[t];
+  document.getElementById('chatAv').textContent = tk.avatar;
+  document.getElementById('chatAv').style.background = tk.color;
+  document.getElementById('chatName').textContent = tk.name;
+  document.getElementById('chatRole').textContent = tk.role;
+  document.querySelectorAll('.tokoh-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + t).classList.add('active');
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = '';
+  if (!chatHistory[t]) {
+    chatHistory[t] = [];
+    setTimeout(() => addMsg('bot', tk.greeting, tk), 300);
+  } else {
+    chatHistory[t].forEach(m => renderMsg(m.role, m.text, tk));
+  }
+  renderQuickBtns(tk);
+}
+
+function renderQuickBtns(tk) {
+  const qb = document.getElementById('quickBtns');
+  qb.innerHTML = tk.quick.map(q => `<button class="qbtn" onclick="sendQuick('${q}')">${q}</button>`).join('');
+}
+
+function sendQuick(q) {
+  document.getElementById('chatInput').value = q;
+  sendMsg();
+}
+
+function addMsg(role, text, tk) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  const now = new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'});
+  if (role === 'bot') {
+    div.innerHTML = `
+      <div class="msg-av" style="background:${tk.color}">${tk.avatar}</div>
+      <div>
+        <div class="msg-bubble">${text}</div>
+        <div class="msg-time">${tk.name} · ${now}</div>
+      </div>`;
+  } else {
+    div.innerHTML = `
+      <div class="msg-av" style="background:var(--navy)">👤</div>
+      <div>
+        <div class="msg-bubble">${text}</div>
+        <div class="msg-time">Kamu · ${now}</div>
+      </div>`;
+  }
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  if (!chatHistory[currentTokoh]) chatHistory[currentTokoh] = [];
+  chatHistory[currentTokoh].push({ role, text });
+}
+
+function renderMsg(role, text, tk) {
+  addMsg(role, text, tk);
+}
+
+function sendMsg() {
+  const inp = document.getElementById('chatInput');
+  const val = inp.value.trim();
+  if (!val) return;
+  inp.value = '';
+  const tk = TOKOH[currentTokoh];
+  addMsg('user', val, tk);
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    const reply = getReply(val, currentTokoh);
+    addMsg('bot', reply, tk);
+  }, 900 + Math.random() * 600);
+}
+
+function getReply(input, tokoh) {
+  const inp = input.toLowerCase();
+  const resp = TOKOH[tokoh].responses;
+  for (const key of Object.keys(resp)) {
+    if (key !== 'default' && inp.includes(key)) return resp[key];
+  }
+  // Smart match
+  const allKeys = Object.keys(resp).filter(k => k !== 'default');
+  for (const key of allKeys) {
+    if (key.split(' ').some(w => w.length > 3 && inp.includes(w))) return resp[key];
+  }
+  return resp['default'];
+}
+
+let typingEl = null;
+function showTyping() {
+  const msgs = document.getElementById('messages');
+  typingEl = document.createElement('div');
+  typingEl.className = 'msg bot';
+  typingEl.id = 'typingIndicator';
+  const tk = TOKOH[currentTokoh];
+  typingEl.innerHTML = `
+    <div class="msg-av" style="background:${tk.color}">${tk.avatar}</div>
+    <div class="msg-bubble" style="padding:0">
+      <div class="typing"><span></span><span></span><span></span></div>
+    </div>`;
+  msgs.appendChild(typingEl);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function hideTyping() {
+  if (typingEl) { typingEl.remove(); typingEl = null; }
+}
+
+// ══════════════════════════════════════════════════════
+// DEBATE
+// ══════════════════════════════════════════════════════
+function selectDebater(slot, tokoh) {
+  if (slot === 1) {
+    debater1 = tokoh;
+    document.querySelectorAll('[id^="d1-"]').forEach(b => b.classList.remove('selected'));
+    document.getElementById('d1-' + tokoh).classList.add('selected');
+  } else {
+    debater2 = tokoh;
+    document.querySelectorAll('[id^="d2-"]').forEach(b => b.classList.remove('selected'));
+    document.getElementById('d2-' + tokoh).classList.add('selected');
+  }
+}
+
+function selectTopic(btn, topic) {
+  document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  debateTopic = topic;
+}
+
+async function startDebate() {
+  if (debater1 === debater2) {
+    alert('Pilih dua tokoh yang berbeda untuk berdebat!');
+    return;
+  }
+  const arena = document.getElementById('debateArena');
+  arena.innerHTML = '';
+  arena.classList.add('visible');
+  const script = DEBATE_SCRIPTS[debateTopic];
+  const lines1 = script[debater1] || [];
+  const lines2 = script[debater2] || [];
+  const t1 = TOKOH[debater1];
+  const t2 = TOKOH[debater2];
+
+  // intro
+  addDebateMsg(arena, 'left', t1.avatar, t1.color, t1.name, `Baik, mari kita mulai! Saya ${t1.name}, siap mendiskusikan topik ini dengan ${t2.name}.`);
+  await delay(600);
+  addDebateMsg(arena, 'right', t2.avatar, t2.color, t2.name, `Dan saya ${t2.name}. Topik yang menarik! Saya punya pandangan yang sangat berbeda dengan ${t1.name}.`);
+  await delay(800);
+
+  const maxRounds = Math.max(lines1.length, lines2.length);
+  for (let i = 0; i < maxRounds; i++) {
+    if (lines1[i]) {
+      await delay(700);
+      addDebateMsg(arena, 'left', t1.avatar, t1.color, t1.name, lines1[i]);
+    }
+    if (lines2[i]) {
+      await delay(900);
+      addDebateMsg(arena, 'right', t2.avatar, t2.color, t2.name, lines2[i]);
+    }
+  }
+  await delay(600);
+  addDebateMsg(arena, 'left', '⚖️', '#C9913A', 'Moderator', `Debat selesai! Dua sudut pandang yang luar biasa dari ${t1.name} dan ${t2.name}. Apa yang kamu pelajari dari debat ini?`);
+}
+
+function addDebateMsg(arena, side, avatar, color, name, text) {
+  const div = document.createElement('div');
+  div.className = 'debate-msg ' + side;
+  div.innerHTML = `
+    <div class="debate-av" style="background:${color}">${avatar}</div>
+    <div class="debate-bubble">
+      <div class="debate-speaker">${name}</div>
+      ${text}
+    </div>`;
+  arena.appendChild(div);
+  arena.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ══════════════════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════════════════
+function startQuiz() {
+  quizIndex = 0; quizScore = 0; quizCorrect = 0; quizWrong = 0;
+  document.getElementById('quizStart').style.display = 'none';
+  document.getElementById('quizResult').style.display = 'none';
+  document.getElementById('quizProgress').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  quizAnswered = false;
+  const q = QUESTIONS[quizIndex];
+  document.getElementById('qpFill').style.width = ((quizIndex / QUESTIONS.length) * 100) + '%';
+  document.getElementById('qpText').textContent = `Soal ${quizIndex + 1} dari ${QUESTIONS.length}`;
+  document.getElementById('qpCorrect').textContent = quizCorrect;
+  document.getElementById('qpWrong').textContent = quizWrong;
+
+  const container = document.getElementById('quizCards');
+  container.innerHTML = `
+    <div class="quiz-card active">
+      <div class="q-category">${q.cat}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">
+        ${q.opts.map((o, i) => `
+          <button class="option-btn" onclick="answerQuiz(${i})" id="opt-${i}">
+            <span class="opt-letter">${['A','B','C','D'][i]}</span>
+            ${o}
+          </button>`).join('')}
+      </div>
+      <div class="q-feedback" id="qFeedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+        ${quizIndex < QUESTIONS.length - 1 ? 'Soal Berikutnya →' : 'Lihat Hasil 🎉'}
+      </button>
+    </div>`;
+}
+
+function answerQuiz(idx) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = QUESTIONS[quizIndex];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const feedback = document.getElementById('qFeedback');
+  if (idx === q.ans) {
+    btns[idx].classList.add('correct');
+    quizScore += 10; quizCorrect++;
+    totalScore += 10;
+    document.getElementById('totalScore').textContent = totalScore;
+    feedback.className = 'q-feedback correct';
+    feedback.innerHTML = `✅ <strong>Benar!</strong> ${q.exp}`;
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.ans].classList.add('correct');
+    quizWrong++;
+    feedback.className = 'q-feedback wrong';
+    feedback.innerHTML = `❌ <strong>Kurang tepat.</strong> Jawaban yang benar adalah <strong>${q.opts[q.ans]}</strong>. ${q.exp}`;
+  }
+  feedback.style.display = 'block';
+  document.getElementById('nextBtn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  quizIndex++;
+  if (quizIndex >= QUESTIONS.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('quizProgress').style.display = 'none';
+  document.getElementById('quizCards').innerHTML = '';
+  const result = document.getElementById('quizResult');
+  result.style.display = 'block';
+  const pct = Math.round((quizCorrect / QUESTIONS.length) * 100);
+  let icon, title, msg;
+  if (pct >= 87) { icon='🏆'; title='Luar Biasa! Ekonom Sejati!'; msg=`Kamu menjawab benar ${quizCorrect} dari ${QUESTIONS.length} soal (${pct}%). Pemahaman kamu tentang sejarah pemikiran ekonomi sangat mendalam. Pertahankan!`; }
+  else if (pct >= 67) { icon='🎖️'; title='Bagus Sekali!'; msg=`Kamu menjawab benar ${quizCorrect} dari ${QUESTIONS.length} soal (${pct}%). Pemahaman yang baik! Pelajari lagi beberapa bagian yang masih kurang yakin.`; }
+  else if (pct >= 47) { icon='📚'; title='Terus Belajar!'; msg=`Kamu menjawab benar ${quizCorrect} dari ${QUESTIONS.length} soal (${pct}%). Masih ada ruang untuk berkembang. Chat dengan para tokoh untuk memahami materi lebih dalam!`; }
+  else { icon='💪'; title='Jangan Menyerah!'; msg=`Kamu menjawab benar ${quizCorrect} dari ${QUESTIONS.length} soal (${pct}%). Coba pelajari ulang materi dari awal, lalu ulangi kuis ini. Kamu pasti bisa!`; }
+  document.getElementById('resultIcon').textContent = icon;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultScore').textContent = quizScore + ' poin';
+  document.getElementById('resultMsg').textContent = msg;
+}
+
+function restartQuiz() {
+  document.getElementById('quizResult').style.display = 'none';
+  document.getElementById('quizStart').style.display = 'block';
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      document.getElementById('app').style.flexDirection = 'column';
+    }, 600);
+  }, 2000);
+});
+</script>
+</body>
+</html>
